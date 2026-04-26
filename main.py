@@ -1,4 +1,5 @@
 from langchain_core.messages import HumanMessage
+
 from lg.graph import build_graph
 from ingestion.pipeline import ingest_all
 

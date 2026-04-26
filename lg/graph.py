@@ -3,8 +3,15 @@ from langgraph.prebuilt import tools_condition
 from langgraph.checkpoint.memory import MemorySaver
 from lg.state import AgentState
 from lg.nodes import llm_node, tool_node, writer_node, critic_node
+from langgraph.checkpoint.postgres import PostgresSaver
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-checkpointer = MemorySaver()
+
+_checkpointer_cm = PostgresSaver.from_conn_string(os.getenv("SUPABASE_URL"))
+checkpointer = _checkpointer_cm.__enter__()
+checkpointer.setup() 
 
 def route_after_llm(state: AgentState) -> str:
     last = state["messages"][-1]
@@ -55,6 +62,3 @@ def build_graph():
     )
 
     return graph.compile(checkpointer=checkpointer)
-# _checkpointer_cm = PostgresSaver.from_conn_string(os.getenv("SUPABASE_URL"))
-# checkpointer = _checkpointer_cm.__enter__()
-# checkpointer.setup() 
